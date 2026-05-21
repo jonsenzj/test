@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 # RAG 相关
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import CharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
+from langchain_openai import OpenAIEmbeddings
 
 load_dotenv()
 api_key = os.getenv("ZHIPU_API_KEY")
@@ -25,7 +25,12 @@ loader = TextLoader("test_cases_knowledge.txt", encoding="utf-8")
 documents = loader.load()
 text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 docs = text_splitter.split_documents(documents)
-embedding_model = HuggingFaceEmbeddings(model_name="shibing624/text2vec-base-chinese")
+
+embedding_model = OpenAIEmbeddings(
+    model="embedding-2",
+    openai_api_key=api_key,
+    openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+)
 vectordb = Chroma.from_documents(
     documents=docs,
     embedding=embedding_model,
